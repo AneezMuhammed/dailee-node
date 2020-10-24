@@ -1,5 +1,6 @@
 var express = require("express");
 var login = require("./routes/login");
+
 var bodyParser = require("body-parser");
 var search = require("./routes/search");
 var session = require("express-session");
@@ -11,8 +12,15 @@ app.use(
     saveUninitialized: true,
   })
 );
-app.get("/search/:value",login.search);
+app.get("/customersearch/:value",login.customersearch);
+app.get("/deliverysearch/:value",login.deliversearch);
+app.get("/publicationsearch/:value",login.publicationsearch);
+app.get("/deliverdetails/:value",login.getdeliverdetails);
+app.get("/publicationdetails/:value",login.getpublicationdetails);
 app.get("/defaultcustomer",login.defaultcustomer);
+app.get("/defaultdeliver",login.defaultdeliver);
+app.get("/defaultpublication",login.defaultpublication);
+app.get("/customerdetails/:value",login.getcustomerdetails)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.post("/login",login.login)

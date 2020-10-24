@@ -1,5 +1,4 @@
 
-
 var mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 const { v4: uuidV4 } = require("uuid");
@@ -23,7 +22,58 @@ var connection = mysql.createConnection({
       console.log(err);
     }
   });
-  exports.search=async function(req,res){ //search starting
+  exports.getcustomerdetails=async function(req,res){
+    var temp=req.params.value;
+    console.log(temp);
+    connection.query('SELECT * FROM customer WHERE customer_id= ?',[temp],async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+        console.log(results);
+      res.json({list:results})}
+      
+      }
+    })
+  }
+  exports.getdeliverdetails=async function(req,res){
+    var temp=req.params.value;
+    console.log(temp);
+    connection.query('SELECT * FROM delivers WHERE deliver_id= ?',[temp],async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+        console.log(results);
+      res.json({list:results})}
+      
+      }
+    })
+  }
+  exports.getpublicationdetails=async function(req,res){
+    var temp=req.params.value;
+    console.log(temp);
+    connection.query('SELECT * FROM publications WHERE publication_id= ?',[temp],async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+        console.log(results);
+      res.json({list:results})}
+      
+      }
+    })
+  }
+  exports.customersearch=async function(req,res){ //search starting
     var temp=req.params.value;
     connection.query('SELECT * FROM customer WHERE lower(customer_name) LIKE "%'+temp+'%"',async function (error, results, fields) {
       if (error) {
@@ -32,11 +82,40 @@ var connection = mysql.createConnection({
           failed: "error ocurred",
         });
       } else {
-        if(results.length>0)
+    if(results.length>0)
       res.json({list:results})
       }
     })
   }
+  exports.deliversearch=async function(req,res){ //search starting
+    var temp=req.params.value;
+    connection.query('SELECT * FROM delivers WHERE lower(name) LIKE "%'+temp+'%"',async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+    if(results.length>0)
+      res.json({list:results})
+      }
+    })
+  }
+  exports.publicationsearch=async function(req,res){ //search starting
+    var temp=req.params.value;
+    connection.query('SELECT * FROM publications WHERE lower(publication_name) LIKE "%'+temp+'%"',async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+    if(results.length>0)
+      res.json({list:results})
+      }
+    })
+  }
+
   exports.defaultcustomer=async function(req,res){
     // var temp=req.params.value;
     console.log("hihi")
@@ -57,6 +136,49 @@ var connection = mysql.createConnection({
       }
     })
   }
+  exports.defaultdeliver=async function(req,res){
+    // var temp=req.params.value;
+    console.log("hihi")
+    connection.query('SELECT * FROM delivers order by name asc  ',async function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+          console.log(results);
+          res.json({list:results});
+         
+        }
+      
+      }
+    })
+  }
+
+  exports.defaultpublication=async function(req,res){
+    // var temp=req.params.value;
+    console.log("hihi")
+    connection.query('SELECT * FROM publications order by publication_name asc  ',async function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+          console.log(results);
+          res.json({list:results})
+         
+        }
+      
+      }
+    })
+  }
+
+
 
   exports.login = async function (req, res) {
     
