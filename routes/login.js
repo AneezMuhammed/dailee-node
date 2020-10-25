@@ -22,6 +22,21 @@ var connection = mysql.createConnection({
       console.log(err);
     }
   });
+  exports.requestdetails=async function (req,res){
+    connection.query('SELECT * FROM request',async function (error, results, fields) {
+      if (error) {
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+        console.log(results);
+      res.json({list:results})}
+      
+      }
+    })
+  }
   exports.getcustomerdetails=async function(req,res){
     var temp=req.params.value;
     console.log(temp);
@@ -377,3 +392,116 @@ zone=req.body.zoneid;
         });
      }
     };
+    //UP TO THIS BACKEND OF REQUEST FROM CUSTOMERS
+    exports.customerinrequestdetails=async function (req,res){
+      var temp=req.params.value;
+      connection.query('SELECT * FROM customer WHERE customer_id= ?',[temp],async function (error, results, fields) {
+        if (error) {
+          res.json({
+            code: 400,
+            failed: "error ocurred",
+          });
+        } else {
+          if(results.length>0){
+          console.log(results);
+        res.json({list:results})}
+        
+        }
+      })
+    }
+
+    exports.request=async function (req,res){                     //this is for checking the correct request in viewing each request
+      var temp=req.params.value;
+      connection.query('SELECT * FROM request WHERE request_id= ?',[temp],async function (error, results, fields) {
+        if (error) {
+          res.json({
+            code: 400,
+            failed: "error ocurred",
+          });
+        } else {
+          if(results.length>0){
+          console.log(results);
+        res.json({list:results})}
+        
+        
+        }
+      })
+    }
+
+   
+    exports.complaint=async function (req,res){      
+                   console.log("hai");
+                   console.log("hhhh")
+      connection.query('SELECT * FROM complaints where status= ?',[0],async function (error, results, fields) {
+        if (error) {
+          res.json({
+            code: 400,
+            failed: "error ocurred",
+          });
+        } else {
+
+          if(results.length>0){
+          console.log(results);
+        res.json({list:results})}
+        
+        
+        }
+      })
+    }
+    exports.complaint2=async function (req,res){  
+      var temp=req.params.value;    
+      console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+connection.query('SELECT * FROM complaints where complaint_id= ?',[temp],async function (error, results, fields) {
+if (error) {
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+
+if(results.length>0){
+console.log(results);
+res.json({list:results})}
+
+
+}
+})
+}
+exports.customercomplaints=async function (req,res){  
+  var temp=req.params.value;    
+  console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+connection.query('SELECT * FROM customer where customer_id= ?',[temp],async function (error, results, fields) {
+if (error) {
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+
+if(results.length>0){
+console.log(results);
+res.json({list:results})}
+
+
+}
+})
+}
+exports.ignorecomplaint=async function (req,res){  
+  var temp=req.params.value;    
+  console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+connection.query('UPDATE complaints set status= "1"  where complaint_id= ?',[temp],async function (error, results, fields) {
+if (error) {
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+
+
+console.log(results);
+res.json({code:200})
+
+
+}
+})
+}

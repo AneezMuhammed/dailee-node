@@ -12,11 +12,18 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.get("/ignorecomplaint/:value",login.ignorecomplaint);
+app.get("/customercomplaints/:value",login.customercomplaints);
+app.get("/complaint2/:value",login.complaint2)
+app.get("/complaint",login.complaint)
 app.get("/customersearch/:value",login.customersearch);
 app.get("/deliverysearch/:value",login.deliversearch);
 app.get("/publicationsearch/:value",login.publicationsearch);
 app.get("/deliverdetails/:value",login.getdeliverdetails);
 app.get("/publicationdetails/:value",login.getpublicationdetails);
+app.get("/request",login.requestdetails);
+app.get("/request2/:value",login.request)
+app.get("/customerinrequestdetails/:value",login.customerinrequestdetails);
 app.get("/defaultcustomer",login.defaultcustomer);
 app.get("/defaultdeliver",login.defaultdeliver);
 app.get("/defaultpublication",login.defaultpublication);
