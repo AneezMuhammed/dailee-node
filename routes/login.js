@@ -23,7 +23,7 @@ var connection = mysql.createConnection({
     }
   });
   exports.requestdetails=async function (req,res){
-    connection.query('SELECT * FROM request',async function (error, results, fields) {
+    connection.query('SELECT * FROM request where admin_view=  ?',[0],async function (error, results, fields) {
       if (error) {
         res.json({
           code: 400,
@@ -427,7 +427,25 @@ zone=req.body.zoneid;
         }
       })
     }
-
+    exports.ignorerequest=async function (req,res){  
+      var temp=req.params.value;    
+      console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+    connection.query('UPDATE request set admin_view= "1"  where request_id= ?',[temp],async function (error, results, fields) {
+    if (error) {
+    res.json({
+    code: 400,
+    failed: "error ocurred",
+    });
+    } else {
+    
+    
+    console.log(results);
+    res.json({code:200})
+    
+    
+    }
+    })
+    }
    
     exports.complaint=async function (req,res){      
                    console.log("hai");

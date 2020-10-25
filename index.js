@@ -12,6 +12,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.get("/ignorerequest/:value",login.ignorerequest);
 app.get("/ignorecomplaint/:value",login.ignorecomplaint);
 app.get("/customercomplaints/:value",login.customercomplaints);
 app.get("/complaint2/:value",login.complaint2)
