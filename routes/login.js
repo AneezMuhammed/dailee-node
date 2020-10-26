@@ -523,3 +523,41 @@ res.json({code:200})
 }
 })
 }
+exports.Menutab=async function (req,res){  
+  
+  console.log("Entered node menu tab");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+connection.query('SELECT * FROM admin',async function (error, results, fields) {
+if (error) {
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+
+if(results.length>0){
+console.log(results);
+res.json({list:results})}
+
+
+}
+})
+}
+exports.sendmessage=async function (req,res){  
+  var temp=req.params.value;    
+  console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+connection.query("INSERT INTO messages (message) values (?)",[temp],async function (error, results, fields) {
+if (error) {
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+
+
+console.log(results);
+res.json({code:200})
+
+
+}
+})
+}

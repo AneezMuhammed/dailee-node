@@ -12,6 +12,8 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.get("/sendmessage/:value",login.sendmessage);
+app.get("/Menutab",login.Menutab);
 app.get("/ignorerequest/:value",login.ignorerequest);
 app.get("/ignorecomplaint/:value",login.ignorecomplaint);
 app.get("/customercomplaints/:value",login.customercomplaints);
