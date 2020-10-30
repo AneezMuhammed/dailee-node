@@ -12,6 +12,11 @@ app.use(
     saveUninitialized: true,
   })
 );
+//&:reqid&:message
+app.post("/replycustomer/:id&:reqid&:message",login.replycustomer)
+app.get("/customersearchindelivery/:value&:value2",login.customersearchindelivery)
+app.get("/deliverydetails/:value",login.deliverydetails)
+app.get("/defaultcustomerfordelivery/:value",login.defaultcustomerfordelivery)
 app.get("/sendmessage/:value",login.sendmessage);
 app.get("/Menutab",login.Menutab);
 app.get("/ignorerequest/:value",login.ignorerequest);
@@ -25,7 +30,9 @@ app.get("/publicationsearch/:value",login.publicationsearch);
 app.get("/deliverdetails/:value",login.getdeliverdetails);
 app.get("/publicationdetails/:value",login.getpublicationdetails);
 app.get("/request",login.requestdetails);
-app.get("/request2/:value",login.request)
+app.get("/request2/:value",login.request);
+app.get("/changestatus/:value",login.changestatus);
+
 app.get("/customerinrequestdetails/:value",login.customerinrequestdetails);
 app.get("/defaultcustomer",login.defaultcustomer);
 app.get("/defaultdeliver",login.defaultdeliver);
@@ -36,6 +43,7 @@ app.use(bodyParser.json());
 app.post("/login",login.login)
  app.post("/deliveryagency",login.registerdelivery)
 app.post("/customer",login.registercustomer)
+app.post("/deliveryhome",login.registerdeliveryhome)
 var router = express.Router();
 app.set("view engine", "ejs");
 app.use("/api", router);

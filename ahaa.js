@@ -1,16 +1,16 @@
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 
-// const { v4: uuidV4 } = require("uuid");
-
-// const saltRounds = 10;
-// password="123456"
-// var encryptedPassword
-// async function myfunction(){
-//     encryptedPassword = await bcrypt.hash(password, saltRounds);
-//     console.log(encryptedPassword)
-// }
-
-//     myfunction();
 const { v4: uuidV4 } = require("uuid");
-var uuidgiven=uuidV4();
-console.log(uuidgiven)
+
+const saltRounds = 10;
+password="jewel"
+var encryptedPassword
+async function myfunction(){
+    encryptedPassword = await bcrypt.hash(password, saltRounds);
+    console.log(encryptedPassword)
+}
+
+    myfunction();
+// const { v4: uuidV4 } = require("uuid");
+// var uuidgiven=uuidV4();
+// console.log(uuidgiven)

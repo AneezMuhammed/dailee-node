@@ -218,14 +218,37 @@ var connection = mysql.createConnection({
               results[0].password
             );
             if (comparison) {
-         
-          
-              res.json({
-                code: 200,
+              console.log("gfff");
+              console.log(results[0].role);  console.log(results[0].login_id); 
+              if(results[0].role=="Delivery to home"){
+                connection.query(
+                  "SELECT * FROM delivers WHERE deliver_id = ?", [results[0].login_id],async function (error, result, fields) {
+                    if (error) {
+                      res.json({
+                        code: 400,
+                        failed: "error ocurred",
+                      });
+                    }else{
+                      console.log()
+                      res.json({
+                        code: 200,
+                        zone_id:result[0].zone_id,
+                       role:results[0].role,
+                       id:results[0].login_id
+                      });
+                    }
                 
-               role:results[0].role
-              });
-            } else {
+              });}
+              else{
+                res.json({
+                  code: 200,
+                  
+                 role:results[0].role,
+                 id:results[0].login_id
+                });
+              }
+             
+            } else {                            //upto
               res.json({
                 code: 204,
                 success: "Email and password does not match",
@@ -309,10 +332,107 @@ zone=req.body.zoneid;
               failed: "error ocurred",
             });
           } else {
-              res.json({
+            connection.query("SELECT * from delivers where deliver_id= ?",[var1.deliver_id],function(error,results,field){
+              if (error) {
+                console.log(error);
+                res.json({
+                  code: 400,
+                  failed: "Inside error ocurred",
+                });
+              }
+              else{
+                res.json({
                   code:200,
-
+                  role:results[0].deliver_type,
+                  id:results[0].deliver_id,
               })
+              }
+            });
+          }
+        });
+     }
+    };
+    exports.registerdeliveryhome = async function (req, res) {
+      const password = req.body.password;
+      
+   
+      
+      const encryptedPassword = await bcrypt.hash(password, saltRounds);
+      var uuidgiven=uuidV4();
+      var users = {
+        login_id: uuidgiven,
+        email: req.body.email,
+        password: encryptedPassword,
+        role:req.body.role,
+        
+        
+       
+      };
+    
+      var var1;
+      var zone;
+  
+    if(req.body.zoneid!=null){
+zone=req.body.zoneid;
+    }
+    
+    
+        connection.query("INSERT INTO login SET ?", users, function (
+          error,
+          results,
+          fields
+        ) {
+          if (error) {
+            console.log(error);
+            res.json({
+              code: 400,
+              failed: "error ocurred",
+            });
+          } else {
+           var1={
+               deliver_id:uuidgiven,
+               name:req.body.name,
+              
+        reg_mobile:req.body.phonenumber,
+        email:req.body.email,
+        deliver_type:req.body.role,
+        
+        // Agency_Name:req.body.agencyname
+           };
+           detailupdate();
+          }
+        });
+     var detailupdate=async function(){
+      connection.query("INSERT INTO delivers SET ?", [var1], function (
+          error,
+          results,
+          fields
+        ) {
+          if (error) {
+            console.log(error);
+            res.json({
+              code: 400,
+              failed: "error ocurred",
+            });
+          } else { 
+            connection.query("SELECT * from delivers where deliver_id= ?",[var1.deliver_id],function(error,results,field){
+              if (error) {
+                console.log(error);
+                res.json({
+                  code: 400,
+                  failed: "Inside error ocurred",
+                });
+              }
+              else{
+                res.json({
+                  code:200,
+                  role:results[0].deliver_type,
+                  id:results[0].deliver_id,
+                  zone_id:results[0].zone_id,
+              })
+              }
+            });
+             
           }
         });
      }
@@ -392,11 +512,13 @@ zone=req.body.zoneid;
         });
      }
     };
-    //UP TO THIS BACKEND OF REQUEST FROM CUSTOMERS
+    //UP TO THIS BACKEND OF REQUEST FROM CUSTOMERS to admin
     exports.customerinrequestdetails=async function (req,res){
       var temp=req.params.value;
+      console.log(temp);
       connection.query('SELECT * FROM customer WHERE customer_id= ?',[temp],async function (error, results, fields) {
         if (error) {
+          console.log(err)
           res.json({
             code: 400,
             failed: "error ocurred",
@@ -404,8 +526,10 @@ zone=req.body.zoneid;
         } else {
           if(results.length>0){
           console.log(results);
-        res.json({list:results})}
-        
+        res.json({list:results,code:200})}
+        else{
+          res.json({code:206})
+        }
         }
       })
     }
@@ -427,9 +551,29 @@ zone=req.body.zoneid;
         }
       })
     }
+    exports.changestatus=async function (req,res){  
+      var temp=req.params.value;    
+      console.log("hai");                                                          
+    connection.query('UPDATE request set status= "1" where request_id= ?',[temp],async function (error, results, fields) {
+    if (error) {
+    res.json({
+    code: 400,
+    failed: "error ocurred",
+    });
+    } else {
+    
+    
+    console.log(results);
+    res.json({code:200})
+    
+    
+    }
+    })
+    }
+    
     exports.ignorerequest=async function (req,res){  
       var temp=req.params.value;    
-      console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
+      console.log("hai");                                                          
     connection.query('UPDATE request set admin_view= "1"  where request_id= ?',[temp],async function (error, results, fields) {
     if (error) {
     res.json({
@@ -560,4 +704,111 @@ res.json({code:200})
 
 }
 })
+}
+
+exports.defaultcustomerfordelivery= async function(req,res){
+  var temp=req.params.value;
+  console.log(temp);
+  console.log("hihi")
+  connection.query('SELECT DISTINCT c1.customer_id,c1.customer_name,c1.reg_mobile,c1.address FROM customer c1 inner join subscription s1 ON c1.customer_id=s1.customer_id where c1.zone_id= ? order by c1.customer_name asc ',[temp],async function (error, results, fields) {
+    if (error) {
+      console.log(error)
+      res.json({
+        code: 400,
+        failed: "error ocurred",
+      });
+    } else {
+      console.log("ok ano")
+      if(results.length>0){
+        console.log(results);
+        res.json({list:results});
+       
+      }
+    
+    }
+  })
+}
+exports.deliverydetails= async function(req,res){
+var temp=req.params.value;
+  console.log("hihi")
+  connection.query('SELECT p1.publication_id,p1.publication_name,p1.category,p1.language,s1.period FROM publications p1 inner join subscription s1 ON p1.publication_id=s1.publication_id where s1.customer_id= ? ',temp,async function (error, results, fields) {
+    if (error) {
+      console.log(error)
+      res.json({
+        code: 400,
+        failed: "error ocurred",
+      });
+    } else {
+      if(results.length>0){
+        console.log(results);
+        res.json({list:results});
+       
+      }
+    
+    }
+  })
+}
+exports.customersearchindelivery= async function(req,res){
+  var temp=req.params.value;
+  var z=req.params.value2;
+  console.log("hihi")
+  connection.query('SELECT DISTINCT c1.customer_id,c1.customer_name,c1.reg_mobile,c1.address FROM customer c1 inner join subscription s1 ON c1.customer_id=s1.customer_id WHERE lower(c1.customer_name) LIKE "%'+temp+'%" and zone_id= ?',[z],async function (error, results, fields) {
+    if (error) {
+      console.log(error)
+      res.json({
+        code: 400,
+        failed: "error ocurred",
+      });
+    } else {
+      if(results.length>0){
+        console.log(results);
+        res.json({list:results});
+       
+      }
+    
+    }
+  })
+}
+
+exports.replycustomer=async function (req,res){  
+  console.log(req.params.id);
+  console.log('fffff');
+  // console.log(req.body)
+   var temp=req.params.reqid;
+  var var1={
+    message:req.params.message,
+    customer_id:req.params.id
+  }
+  console.log("dddddd");   
+  
+                                                       
+connection.query('INSERT INTO messages SET ?',[var1],async function (error, results, fields) {
+  console.log("qqqqq")
+if (error) {
+  console.log(error)
+res.json({
+code: 400,
+failed: "error ocurred",
+});
+} else {
+  console.log(results)
+  console.log("chumma")
+  connection.query('UPDATE request set admin_view= "1"  where request_id= ?',[temp],async function (error, results, fields){
+    if (error) {
+      res.json({
+      code: 400,
+      failed: "error ocurred",
+      });
+      }
+      else{
+        console.log(results);
+        res.json({code:200})
+        
+      }
+  });
+
+
+
+}
+});
 }
