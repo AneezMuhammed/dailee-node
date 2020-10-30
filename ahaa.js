@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { v4: uuidV4 } = require("uuid");
 
 const saltRounds = 10;
-password="jewel"
+password="aneez"
 var encryptedPassword
 async function myfunction(){
     encryptedPassword = await bcrypt.hash(password, saltRounds);

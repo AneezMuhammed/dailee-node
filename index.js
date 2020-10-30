@@ -13,6 +13,9 @@ app.use(
   })
 );
 //&:reqid&:message
+app.get("/confirmrequest/:value",login.confirmrequest);
+app.get("/deliver2agencyrequest",login.deliver2agencyrequest)
+app.get("/deliverprofile/:value",login.deliverprofile)
 app.post("/replycustomer/:id&:reqid&:message",login.replycustomer)
 app.get("/customersearchindelivery/:value&:value2",login.customersearchindelivery)
 app.get("/deliverydetails/:value",login.deliverydetails)

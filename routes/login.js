@@ -812,3 +812,66 @@ failed: "error ocurred",
 }
 });
 }
+exports.deliverprofile= async function(req,res){
+  var temp=req.params.value;
+    console.log("hihi")
+    connection.query('SELECT * from delivers where deliver_id= ? ',temp,async function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({
+          code: 400,
+          failed: "error ocurred",
+        });
+      } else {
+        if(results.length>0){
+          console.log(results);
+          res.json({list:results});
+         
+        }
+      
+      }
+    })
+  }
+
+  exports.deliver2agencyrequest= async function(req,res){
+   console.log("hey hey aneez")
+      console.log("hey deliver")
+      connection.query('SELECT * from request where status="0" and admin_view="1"',async function (error, results, fields) {
+        if (error) {
+          console.log(error)
+          res.json({
+            code: 400,
+            failed: "error ocurred",
+          });
+        } else {
+          if(results.length>0){
+            console.log(results);
+            res.json({list:results});
+           
+          }
+        
+        }
+      })
+    }
+    exports.confirmrequest= async function(req,res){
+      temp=req.params.value
+      console.log("hey hey")
+         console.log("hey deliver")
+         connection.query('UPDATE request set status="1" where request_id= ?',[temp],async function (error, results, fields) {
+           if (error) {
+             console.log(error)
+             res.json({
+               code: 400,
+               failed: "error ocurred",
+             });
+           } else {
+             
+               console.log(results);
+               res.json({code:200})
+              
+             
+           
+           }
+         })
+       }
+       
