@@ -23,7 +23,7 @@ var connection = mysql.createConnection({
     }
   });
   exports.requestdetails=async function (req,res){
-    connection.query('SELECT * FROM request where admin_view=  ?',[0],async function (error, results, fields) {
+    connection.query('SELECT * FROM new_publications where admin_view=  ?',[0],async function (error, results, fields) {
       if (error) {
         res.json({
           code: 400,
@@ -536,7 +536,7 @@ zone=req.body.zoneid;
 
     exports.request=async function (req,res){                     //this is for checking the correct request in viewing each request
       var temp=req.params.value;
-      connection.query('SELECT * FROM request WHERE request_id= ?',[temp],async function (error, results, fields) {
+      connection.query('SELECT * FROM new_publications WHERE newpub_id= ?',[temp],async function (error, results, fields) {
         if (error) {
           res.json({
             code: 400,
@@ -554,7 +554,7 @@ zone=req.body.zoneid;
     exports.changestatus=async function (req,res){  
       var temp=req.params.value;    
       console.log("hai");                                                          
-    connection.query('UPDATE request set status= "1" where request_id= ?',[temp],async function (error, results, fields) {
+    connection.query('UPDATE new_publications set status= "1" where newpub_id= ?',[temp],async function (error, results, fields) {
     if (error) {
     res.json({
     code: 400,
@@ -574,7 +574,7 @@ zone=req.body.zoneid;
     exports.ignorerequest=async function (req,res){  
       var temp=req.params.value;    
       console.log("hai");                                                          
-    connection.query('UPDATE request set admin_view= "1"  where request_id= ?',[temp],async function (error, results, fields) {
+    connection.query('UPDATE new_publications set admin_view= "1"  where newpub_id= ?',[temp],async function (error, results, fields) {
     if (error) {
     res.json({
     code: 400,
@@ -689,7 +689,7 @@ res.json({list:results})}
 exports.sendmessage=async function (req,res){  
   var temp=req.params.value;    
   console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
-connection.query("INSERT INTO messages (message) values (?)",[temp],async function (error, results, fields) {
+connection.query("INSERT INTO notifications (content) values (?)",[temp],async function (error, results, fields) {
 if (error) {
 res.json({
 code: 400,
@@ -776,13 +776,13 @@ exports.replycustomer=async function (req,res){
   // console.log(req.body)
    var temp=req.params.reqid;
   var var1={
-    message:req.params.message,
+    content:req.params.message,
     customer_id:req.params.id
   }
   console.log("dddddd");   
   
                                                        
-connection.query('INSERT INTO messages SET ?',[var1],async function (error, results, fields) {
+connection.query('INSERT INTO notifications SET ?',[var1],async function (error, results, fields) {
   console.log("qqqqq")
 if (error) {
   console.log(error)
@@ -793,7 +793,7 @@ failed: "error ocurred",
 } else {
   console.log(results)
   console.log("chumma")
-  connection.query('UPDATE request set admin_view= "1"  where request_id= ?',[temp],async function (error, results, fields){
+  connection.query('UPDATE new_publications set admin_view= "1"  where newpub_id= ?',[temp],async function (error, results, fields){
     if (error) {
       res.json({
       code: 400,
@@ -836,7 +836,7 @@ exports.deliverprofile= async function(req,res){
   exports.deliver2agencyrequest= async function(req,res){
    console.log("hey hey aneez")
       console.log("hey deliver")
-      connection.query('SELECT * from request where status="0" and admin_view="1"',async function (error, results, fields) {
+      connection.query('SELECT * from new_publications where status="0" and admin_view="1"',async function (error, results, fields) {
         if (error) {
           console.log(error)
           res.json({
@@ -857,7 +857,7 @@ exports.deliverprofile= async function(req,res){
       temp=req.params.value
       console.log("hey hey")
          console.log("hey deliver")
-         connection.query('UPDATE request set status="1" where request_id= ?',[temp],async function (error, results, fields) {
+         connection.query('UPDATE new_publications set status="1" where newpub_id= ?',[temp],async function (error, results, fields) {
            if (error) {
              console.log(error)
              res.json({
