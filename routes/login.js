@@ -1,7 +1,9 @@
 
 var mysql = require("mysql2");
+var math=require("mathjs");
 const bcrypt = require("bcrypt");
 const { v4: uuidV4 } = require("uuid");
+const { distance } = require("mathjs");
 
 const saltRounds = 10;
 const myPlaintextPassword = "s0//P4$$w0rD";
@@ -353,92 +355,109 @@ zone=req.body.zoneid;
      }
     };
     exports.registerdeliveryhome = async function (req, res) {
-      const password = req.body.password;
-      
-   
-      
-      const encryptedPassword = await bcrypt.hash(password, saltRounds);
-      var uuidgiven=uuidV4();
-      var users = {
-        login_id: uuidgiven,
-        email: req.body.email,
-        password: encryptedPassword,
-        role:req.body.role,
-        
-        
-       
-      };
-    
-      var var1;
-      var zone;
-  
-    if(req.body.zoneid!=null){
-zone=req.body.zoneid;
-    }
-    
-    
-        connection.query("INSERT INTO login SET ?", users, function (
-          error,
-          results,
-          fields
-        ) {
+     
+        var temp=req.body.zone_key;
+        console.log(temp);
+        connection.query('SELECT zone_id FROM zone WHERE zone_key= ?',[temp],async function (error, results, fields) {
           if (error) {
-            console.log(error);
+            console.log(err)
             res.json({
               code: 400,
               failed: "error ocurred",
             });
           } else {
-           var1={
-               deliver_id:uuidgiven,
-               name:req.body.name,
-              
-        reg_mobile:req.body.phonenumber,
-        email:req.body.email,
-        deliver_type:req.body.role,
-        
-        // Agency_Name:req.body.agencyname
+            var tempzone_id=results[0]['zone_id'];
+            const password = req.body.password;
+            const encryptedPassword = await bcrypt.hash(password, saltRounds);
+            var uuidgiven=uuidV4();
+            var users = {
+              login_id: uuidgiven,
+              email: req.body.email,
+              password: encryptedPassword,
+              role:req.body.role,
            };
-           detailupdate();
+          
+      //       var var1;
+      //       var zone;
+        
+      //     if(req.body.zoneid!=null){
+      // zone=req.body.zoneid;
+      //     }
+          
+          
+              connection.query("INSERT INTO login SET ?", users, function (
+                error,
+                results,
+                fields
+              ) {
+                if (error) {
+                  console.log(error);
+                  res.json({
+                    code: 400,
+                    failed: "error ocurred",
+                  });
+                } else {
+                 var1={
+                     deliver_id:uuidgiven,
+                     name:req.body.name,
+                    
+              reg_mobile:req.body.phonenumber,
+              email:req.body.email,
+              deliver_type:req.body.role,
+              zone_id:tempzone_id
+              
+              // Agency_Name:req.body.agencyname
+                 };
+                 detailupdate();
+                }
+              });
+           var detailupdate=async function(){
+            connection.query("INSERT INTO delivers SET ?", [var1], function (
+                error,
+                results,
+                fields
+              ) {
+                if (error) {
+                  console.log(error);
+                  res.json({
+                    code: 400,
+                    failed: "error ocurred",
+                  });
+                } else { 
+                  connection.query("SELECT * from delivers where deliver_id= ?",[var1.deliver_id],function(error,results,field){
+                    if (error) {
+                      console.log(error);
+                      res.json({
+                        code: 400,
+                        failed: "Inside error ocurred",
+                      });
+                    }
+                    else{
+                      res.json({
+                        code:200,
+                        role:results[0].deliver_type,
+                        id:results[0].deliver_id,
+                        zone_id:results[0].zone_id,
+                    })
+                    }
+                  });
+                   
+                }
+              });
+           }
           }
-        });
-     var detailupdate=async function(){
-      connection.query("INSERT INTO delivers SET ?", [var1], function (
-          error,
-          results,
-          fields
-        ) {
-          if (error) {
-            console.log(error);
-            res.json({
-              code: 400,
-              failed: "error ocurred",
-            });
-          } else { 
-            connection.query("SELECT * from delivers where deliver_id= ?",[var1.deliver_id],function(error,results,field){
-              if (error) {
-                console.log(error);
-                res.json({
-                  code: 400,
-                  failed: "Inside error ocurred",
-                });
-              }
-              else{
-                res.json({
-                  code:200,
-                  role:results[0].deliver_type,
-                  id:results[0].deliver_id,
-                  zone_id:results[0].zone_id,
-              })
-              }
-            });
-             
-          }
-        });
-     }
+        })
+      
+     
     };
-
+    function shortdistance(lat1,lon1,lat2,lon2){
+      var p = math.pi / 180;
+      var a = 0.5 -math.cos((lat2 - lat1) * p) / 2 +
+          math.cos(lat1 * p) * math.cos(lat2 * p) * (1 - math.cos((lon2 - lon1) * p)) / 2;
+      return 12742 * math.asin(math.sqrt(a));
+    }
     exports.registercustomer = async function (req, res) {
+      
       const password = req.body.password;
       
    
@@ -455,7 +474,7 @@ zone=req.body.zoneid;
        
       };
     
-      var var1;
+      var values1;
 //       var zone;
   
 //     if(req.body.zoneid!=null){
@@ -475,24 +494,48 @@ zone=req.body.zoneid;
               failed: "error ocurred",
             });
           } else {
-           var1={
-               customer_id:uuidgiven,
-               customer_name:req.body.name,
-              
-        reg_mobile:req.body.phonenumber,
-        email:req.body.email,
-        address:req.body.address,
-        latitude:req.body.latitude,
-        longitude:req.body.longitude,
-        // deliver_type:req.body.role,
-        
-        // Agency_Name:req.body.agencyname
-           };
-           detailupdate();
+            var tempzoneid;
+                 var flag;
+                var smalllength=2000;         //need to change
+              connection.query('SELECT zone_id,latitude,longitude FROM zone',async function (error, results, fields) {
+                if (error) {
+                  console.log(error)
+                  res.json({
+                    code: 400,
+                    failed: "error ocurred",
+                  });
+                } else {
+                  for(var i=0;i<results.length;i++){
+                    temp1=shortdistance(req.body.latitude,req.body.longitude,parseFloat(results[i]['latitude']),parseFloat(results[i]['longitude']))
+                    console.log(temp1)
+                    if(temp1<smalllength){
+                      smalllength=temp1;
+                      flag=i;
+
+                    }
+                  }
+                 tempzoneid=(results[flag]['zone_id']).toString();
+                 console.log(tempzoneid)
+                 values1={
+                  customer_id:uuidgiven,
+                  customer_name:req.body.name,
+                  reg_mobile:req.body.phonenumber,
+                 email:req.body.email,
+                 address:req.body.address,
+                 latitude:req.body.latitude,
+                 longitude:req.body.longitude,
+                 zone_id:tempzoneid
+               };
+              console.log(values1)
+              detailupdate();
+                }
+              })
+            
+      
           }
         });
      var detailupdate=async function(){
-      connection.query("INSERT INTO customer SET ?", [var1], function (
+      connection.query("INSERT INTO customer SET ?", [values1], function (
           error,
           results,
           fields
