@@ -13,6 +13,9 @@ app.use(
   })
 );
 //&:reqid&:message
+app.get("/Amountadmindetails/:value",login.Amountadmindetails);
+app.get("/Agencyinamountsearch/:value",login.Agencyinamountsearch);
+app.get("/Amountdefault",login.Amountdefault)
 app.get("/confirmrequest/:value",login.confirmrequest);
 app.get("/deliver2agencyrequest",login.deliver2agencyrequest)
 app.get("/deliverprofile/:value",login.deliverprofile)

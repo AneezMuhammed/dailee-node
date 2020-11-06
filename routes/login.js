@@ -75,7 +75,7 @@ var connection = mysql.createConnection({
   }
   exports.getpublicationdetails=async function(req,res){
     var temp=req.params.value;
-    console.log(temp);
+    console.log("asfafa"+temp);
     connection.query('SELECT * FROM publications WHERE publication_id= ?',[temp],async function (error, results, fields) {
       if (error) {
         res.json({
@@ -632,19 +632,20 @@ zone=req.body.zoneid;
     
     }
     })
-    }
+    };
    
     exports.complaint=async function (req,res){      
                    console.log("hai");
                    console.log("hhhh")
-      connection.query('SELECT * FROM complaints where status= ?',[0],async function (error, results, fields) {
+      connection.query('SELECT c1.complaint_id,c1.customer_id,c.customer_name,c1.reason_type FROM complaints c1 inner join customer c where c1.customer_id=c.customer_id and c1.status="0"',async function (error, results, fields) {
         if (error) {
           res.json({
             code: 400,
             failed: "error ocurred",
           });
         } else {
-
+           console.log("aaa")
+           console.log(results)
           if(results.length>0){
           console.log(results);
         res.json({list:results})}
@@ -652,7 +653,7 @@ zone=req.body.zoneid;
         
         }
       })
-    }
+    };
     exports.complaint2=async function (req,res){  
       var temp=req.params.value;    
       console.log("hai");                                                             //it is used for enlarging complaaints by retreivind dta from complaint table
@@ -917,4 +918,72 @@ exports.deliverprofile= async function(req,res){
            }
          })
        }
-       
+       exports.Amountdefault= async function(req,res){
+        console.log("Entered amount default")
+           connection.query('SELECT DISTINCT n1.deliverer_id,d1.Agency_Name from new_publications n1 inner join  delivers d1 where n1.deliverer_id=d1.deliver_id and n1.deliverer_id!="NULL"',async function (error, results, fields) {
+             if (error) {
+               console.log(error)
+               res.json({
+                 code: 400,
+                 failed: "error ocurred",
+               });
+             } else {
+               if(results.length>0){
+                 console.log(results);
+                 res.json({list:results});
+                
+               }
+             
+             }
+           })
+         }
+         //SELECT DISTINCT c1.customer_id,c1.customer_name,c1.reg_mobile,c1.address FROM customer c1 inner join subscription s1 ON c1.customer_id=s1.customer_id WHERE lower(c1.customer_name) LIKE "%'+temp+'%" and zone_id= ?
+         exports.Agencyinamountsearch= async function(req,res){
+           var temp=req.params.value
+          console.log("Entered search in amount default")
+             connection.query('SELECT DISTINCT n1.deliverer_id,d1.Agency_Name from new_publications n1 inner join  delivers d1 where lower(d1.Agency_Name) like "%'+temp+'%" and n1.deliverer_id=d1.deliver_id and n1.deliverer_id!="NULL"',async function (error, results, fields) {
+               if (error) {
+                 console.log(error)
+                 res.json({
+                   code: 400,
+                   failed: "error ocurred",
+                 });
+               } else {
+                 if(results.length>0){
+                   console.log(results);
+                   res.json({list:results});
+                  
+                 }
+               
+               }
+             })
+           }
+           exports.Amountadmindetails= async function(req,res){
+             var temp=req.params.value;
+
+            console.log("Entered amount admin details")
+               connection.query('SELECT n1.deliverer_id,n1.newpub_id,n1.pub_Name,n1.language,n1.category,n1.period,n1.quantity,p1.price,p1.copies_per_month from new_publications n1 inner join  publications p1 where n1.newpub_id=p1.publication_id and n1.deliverer_id= ?',[temp],async function (error, results, fields) {
+                 if (error) {
+                   console.log(error)
+                   res.json({
+                     code: 400,
+                     failed: "error ocurred",
+                   });
+                 } else {
+                   var sum=0;
+                   for(var i=0;i<results.length;i++){
+                     sum=sum+parseInt(results[i].price)*results[i].quantity*parseInt(results[i].copies_per_month)*results[i].period;
+                   }
+                   console.log(results);
+                   console.log(sum);
+                   res.json({list:results,amount:sum})
+
+                  //  if(results.length>0){
+                  //    console.log(results);
+                  //    res.json({list:results});
+                    
+                  //  }
+                 
+                 }
+               })
+             }
